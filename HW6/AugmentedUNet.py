@@ -410,7 +410,6 @@ while test_dice_score < 0.6:
     print("Start Training...")
     for epoch in range(num_epochs):
         ########################### Training #####################################
-        print("\nEPOCH " +str(epoch+1)+" of "+str(num_epochs)+"\n")
         # TODO: Design your own training section
 
         model_2.train()
