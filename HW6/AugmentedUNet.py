@@ -483,7 +483,7 @@ plt.legend(['train', 'validation'])
 plt.grid(True)
 
 # Display the plot
-plt.show()
+plt.savefig('unet_train_val_loss.png')
 
 # Free model from GPU Ram
 model_2.to(torch.device("cpu"))
