@@ -75,7 +75,7 @@ for epoch in range(5):
 correct = 0
 total = 0
 with torch.no_grad():
-    vgg16.eval()
+    vgg16_clone.eval()
     for input, label in test_dataloader:
         input = input.cuda()
         label = label.cuda()
