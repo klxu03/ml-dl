@@ -27,7 +27,7 @@ learning_rate = 0.001
 num_epochs = 200
 
 # General Data Directory ##TODO: Please fill in the appropriate directory
-data_dir = "./data"
+data_dir = "./HW6_data"
 
 ## Segmentation + Colorization Paths
 segmentation_data_dir = f"{data_dir}/segmentation/"
