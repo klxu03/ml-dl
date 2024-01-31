@@ -49,11 +49,11 @@ def explore_embeddings(dev_d: Dict[str, List[Union[str, int]]],
 if __name__ == '__main__':
     # Run every demo function in basics.py
     # uncomment the following line to run
-    run_all_basics_demo()
+    # run_all_basics_demo()
 
     # load raw data
     # uncomment the following line to run
-    # dev_data, train_data, test_data = load_data()
+    dev_data, train_data, test_data = load_data()
 
     # Run a single training run
     # uncomment the following line to run
@@ -61,5 +61,5 @@ if __name__ == '__main__':
 
     # Explore different embeddings
     # uncomment the following line to run
-    # explore_embeddings(dev_data, train_data, test_data)
+    explore_embeddings(dev_data, train_data, test_data)
     pass
