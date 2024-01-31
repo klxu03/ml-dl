@@ -1,6 +1,6 @@
 from easydict import EasyDict
 from basics import run_all_basics_demo
-from modsel import load_data, run, visualize_epochs, visualize_configs
+from model import load_data, run, visualize_epochs, visualize_configs
 from typing import List, Tuple, Dict, Union
 
 EMBEDDING_TYPES = ["glove-twitter-50", "glove-twitter-100", "glove-twitter-200", "word2vec-google-news-300"]
@@ -49,7 +49,7 @@ def explore_embeddings(dev_d: Dict[str, List[Union[str, int]]],
 if __name__ == '__main__':
     # Run every demo function in basics.py
     # uncomment the following line to run
-    # run_all_basics_demo()
+    run_all_basics_demo()
 
     # load raw data
     # uncomment the following line to run
