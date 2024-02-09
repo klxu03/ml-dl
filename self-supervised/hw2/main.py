@@ -1,7 +1,7 @@
 import gensim.downloader
 from easydict import EasyDict
 from ngram_lm import run_ngram
-from gradient_descent import load_data, run_grad_descent, visualize_epochs
+from gradient_descent import load_data, run_grad_descent, visualize_epochs, test_softmax, test_gradient_loss
 from typing import List, Tuple, Dict, Union
 EMBEDDING_TYPES = ["glove-twitter-50", "glove-twitter-100", "glove-twitter-200", "word2vec-google-news-300"]
 
@@ -25,13 +25,17 @@ def single_grad_descent(dev_d: Dict[str, List[Union[str, int]]],
 if __name__ == '__main__':
     # run ngram
     # uncomment the following line to run
-    run_ngram()
+    # run_ngram()
 
     # load raw data
     # uncomment the following line to run
-    # dev_data, train_data, test_data = load_data()
+    dev_data, train_data, test_data = load_data()
 
     # Run a single training run
     # uncomment the following line to run
-    # single_grad_descent(dev_data, train_data, test_data)
+    single_grad_descent(dev_data, train_data, test_data)
 
+    # test things
+    test_softmax()
+
+    pass
