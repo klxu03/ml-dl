@@ -22,6 +22,28 @@ def compute_log_odds_ratios(a_counter, b_counter):
     """ 
     log_odds_ratio = {}
     ####### PART A #######
+    total_a = sum(a_counter.values())
+    total_b = sum(b_counter.values())
+
+    for word in set(a_counter).intersection(b_counter):
+        # Get the word counts for each group, default to 1 if not found
+        a_word_count = a_counter.get(word, 0)
+        b_word_count = b_counter.get(word, 0)
+        
+        # Calculate the normalized frequencies
+        f_a = a_word_count / total_a
+        f_b = b_word_count / total_b
+        
+        # Calculate the odds
+        odds_a = f_a / (1 - f_a)
+        odds_b = f_b / (1 - f_b)
+        
+        # Calculate the log odds
+        log_odds_a = math.log(odds_a)
+        log_odds_b = math.log(odds_b)
+        
+        # Calculate the log odds ratio and store it in the dictionary
+        log_odds_ratio[word] = log_odds_a - log_odds_b
     
     return log_odds_ratio
 
@@ -44,10 +66,28 @@ def compute_odds_with_prior(counts1, counts2, prior):
     log_odds_ratio = {}
 
     ####### PART B #######
-   
+    total_counts1 = sum(counts1.values())
+    total_counts2 = sum(counts2.values())
+
+    combined_prior = counts1 + counts2  # This ensures that alpha_w = y_w1 + y_w2 for each word
+    alpha_0 = sum(combined_prior.values())  # This is the sum of all alpha_w values
+
+    for word in set(counts1).intersection(counts2):
+        y_w1 = counts1.get(word, 0) 
+        y_w2 = counts2.get(word, 0) 
+        alpha_w = y_w1 + y_w2 
+        
+        omega_w1 = (y_w1 + alpha_w) / (total_counts1 + alpha_0 - y_w1 - alpha_w)
+        omega_w2 = (y_w2 + alpha_w) / (total_counts2 + alpha_0 - y_w2 - alpha_w)
+        
+        delta_w = math.log(omega_w1 / omega_w2)
+        
+        variance = 1 / (y_w1 + alpha_w) + 1 / (y_w2 + alpha_w)
+        z_score = delta_w / math.sqrt(variance)
+        
+        log_odds_ratio[word] = z_score
+
     return log_odds_ratio
-
-
 
 def smoother(A, window, count_list):
     """ smooth the counts given a window and a smoothing factor A.
@@ -65,6 +105,25 @@ def smoother(A, window, count_list):
     new_counts = []
     
     ####### PART C #######
+    # Start applying exponential smoothing after the first `window` elements
+    for t in range(window, len(count_list)):
+        current_counter = count_list[t]
+        previous_smoothed_counter = new_counts[-1] if len(new_counts) > 0 else Counter()
+
+        # Calculate the moving count for the current window
+        moving_count = Counter()
+        for i in range(max(0, t-window+1), t+1):
+            moving_count.update(count_list[i])
+
+        # Calculate the smoothed value for the current time point
+        smoothed_counter = Counter()
+        for word in current_counter:
+            m_wt = moving_count[word]
+            s_wt_previous = previous_smoothed_counter[word]
+            s_wt = A * m_wt + (1 - A) * s_wt_previous
+            smoothed_counter[word] = s_wt
+
+        new_counts.append(smoothed_counter)
     
     return new_counts
             
