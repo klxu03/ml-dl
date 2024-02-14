@@ -1,0 +1,339 @@
+\documentclass{article}
+
+
+\RequirePackage{natbib}
+% for citation commands in the .tex, authors can use:
+% \citep, \citet, and \citeyearpar for compatibility with natbib, or
+% \cite, \newcite, and \shortcite for compatibility with older ACL .sty files
+\renewcommand\cite{\citep}	% to get "(Author Year)" with natbib    
+\newcommand\shortcite{\citeyearpar}% to get "(Year)" with natbib    
+\newcommand\newcite{\citet}	% to get "Author (Year)" with natbib    
+
+\usepackage{fancyhdr}
+\usepackage{extramarks}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{tikz}
+\usepackage[plain]{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+
+\usepackage{hyperref}
+
+
+\usetikzlibrary{automata,positioning}
+
+%
+% Basic Document Settings
+%
+
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\linespread{1.1}
+
+\pagestyle{fancy}
+% \lhead{\hmwkAuthorName}
+\lhead{\hmwkClass\ (\hmwkClassInstructor): \hmwkTitle}
+\rhead{\firstxmark}
+\lfoot{\lastxmark}
+\cfoot{\thepage}
+
+\renewcommand\headrulewidth{0.4pt}
+\renewcommand\footrulewidth{0.4pt}
+
+\setlength\parindent{0pt}
+
+%
+% Create Problem Sections
+%
+
+\newcommand{\enterProblemHeader}[1]{
+    \nobreak\extramarks{}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+    \nobreak\extramarks{Problem \arabic{#1} (continued)}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+}
+
+\newcommand{\exitProblemHeader}[1]{
+    \nobreak\extramarks{Problem \arabic{#1} (continued)}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+    \stepcounter{#1}
+    \nobreak\extramarks{Problem \arabic{#1}}{}\nobreak{}
+}
+
+\setcounter{secnumdepth}{0}
+\newcounter{partCounter}
+\newcounter{homeworkProblemCounter}
+\setcounter{homeworkProblemCounter}{1}
+\nobreak\extramarks{Problem \arabic{homeworkProblemCounter}}{}\nobreak{}
+
+%
+% Homework Problem Environment
+%
+% This environment takes an optional argument. When given, it will adjust the
+% problem counter. This is useful for when the problems given for your
+% assignment aren't sequential. See the last 3 problems of this template for an
+% example.
+%
+\newenvironment{homeworkProblem}[1][none]{
+    \ifthenelse{\equal{#1}{none}}{
+    \section{Problem \arabic{homeworkProblemCounter}}
+    }{
+    \section{Problem \arabic{homeworkProblemCounter}: #1}
+    }
+
+    % \ifnum#1=-1
+        
+    % \else
+        
+    % \fi
+    \setcounter{partCounter}{1}
+    \enterProblemHeader{homeworkProblemCounter}
+}{
+    \exitProblemHeader{homeworkProblemCounter}
+}
+
+
+\newcommand{\hmwkTitle}{Homework\ \#1}
+\newcommand{\hmwkDueDate}{February 12th, 2024}
+\newcommand{\hmwkClass}{NLP4CSS}
+
+\newcommand{\hmwkClassInstructor}{Instructor: Anjalie Field; Lead TA: Samuel Lefcourt; special thanks to Carlos Aguirre}
+
+\title{
+    \vspace{-1in}
+    \textmd{\textbf{\hmwkClass:\ \hmwkTitle}}\\
+    \normalsize\vspace{0.1in}\textmd{Due 11:59pm EST\ on\ \hmwkDueDate}\\
+    \vspace{0.1in}\large{\textit{\hmwkClassInstructor}} \\
+    \line(1,0){450}
+    % \vspace{0.5in}
+}
+
+
+\date{}
+
+\renewcommand{\part}[1]{\textbf{\large Part \Alph{partCounter}}\stepcounter{partCounter}\\}
+
+%
+% Various Helper Commands
+%
+
+% Useful for algorithms
+\newcommand{\alg}[1]{\textsc{\bfseries \footnotesize #1}}
+
+% For derivatives
+\newcommand{\deriv}[1]{\frac{\mathrm{d}}{\mathrm{d}x} (#1)}
+
+% For partial derivatives
+\newcommand{\pderiv}[2]{\frac{\partial}{\partial #1} (#2)}
+
+% Integral dx
+\newcommand{\dx}{\mathrm{d}x}
+
+% Alias for the Solution section header
+\newcommand{\solution}{\textbf{\large Solution}}
+
+% Probability commands: Expectation, Variance, Covariance, Bias
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Bias}{\mathrm{Bias}}
+\newcommand{\points}[1]{\hfill #1 points}
+
+\begin{document}
+
+\maketitle
+
+\textbf{Guidelines.} 
+This assignment is to be completed \textbf{individually}.
+Be sure to comply with course policies on the course website.
+
+
+\textbf{Starter Code.} 
+Starter code is provided.
+
+
+\begin{lstlisting}
+    HW1
+    |- log_odds.py
+    |- topic_models.py
+    |- word_embeddings.py
+    |- data
+      |- cr_metadata.csv
+\end{lstlisting}
+
+\textbf{Submission.}
+This homework has written and coding components.
+For coding, you will complete the python files and submit everything else to gradescope.
+For the written part, you will write your answers in a PDF named \texttt{README.pdf} and also submit it to gradescope.  Course Entry Code: YDPR48.
+Your final submission should have all the completed python files as well as your \texttt{README.pdf}.
+
+
+\textbf{Data.}
+In this homework we will use a sample from the \textit{Congressional Record}, which records all speeches given on the floor of the US Congress.
+This is a classical corpus used in many political science studies.
+Normally, to use any data for analysis, you would have to preprocess the text data, however, the preprocessing has been done for us already.
+\begin{enumerate}
+    \item Corpus originally constructed in plaintext format by \citep{gentzkow2018congressional}
+    \item Prepared for NLP methods (\texttt{word2vec} models) by \citep{rodriguez2022word}: remove non-alphabetic characters, lowercase, and remove words of length 2 or less, then filter to Congressional sessions 111-114 (Jan 2009 - Jan 2017) and to speakers with party labels D and R. 
+    \item \citet{stewart2022democratizing} converted the plaintext R-data files to txt and csv, subsampled the corpus for convenience.
+\end{enumerate}
+Additionally, throughout the homework problems we utilize a list of curated political keywords that are useful in exploring the performance of word embeddings models according to human raters which was originally collected by \citep{rodriguez2022word}.
+\begin{lstlisting}
+    politics_words = [
+                  'freedom', 'justice', 'equality', 'democracy', 
+                  'abortion', 'immigration', 'welfare', 'taxes', 
+                  'democrat', 'republican'
+                 ]
+\end{lstlisting}
+
+\begin{homeworkProblem}[Log-Odds Ratio Informative Dirichlet Prior]
+
+In class, you learned about methods to measure word statistics in corpora.
+In this section, you will implement the Log-Odds Ratio Informative Dirichlet Prior method, as well as additional applications that may deliver useful insights on our data.
+Throughout this section we will use notation as described in \citet{monroe2008fightin}, and editing the \texttt{log\_odds.py} file.
+\\
+    \part{}
+(10 Points) \textbf{Complete the log-odds ratio code}.
+We can define the frequency of words being in a corpus through \textit{odds}, that is, the observed "odds" $O$ of word $w$ in group $i$'s usage are defined as:
+\begin{equation*}
+    O_{w}^{(i)} = \frac{f_{w}^{(i)}}{1 - f_{w}^{(i)}}
+\end{equation*}
+Where $f_{w}^{(i)} = y_{w}^{(i)}/n^{(i)}$ is the normalized proportion of word $w$ given word counts $y_{w}$ and total number of words ($n = \sum_{w=1}^{W} y_w$).
+However, the lack of symmetry between groups makes odds ratio hard to compare across groups, therefore, we will take the $log$, resulting in
+\begin{equation*}
+    L_{w}^{(i)} = log(\frac{f_{w}^{(i)}}{1 - f_{w}^{(i)}})
+    = log(\frac{y_{w}^{(i)}/n^{(i)}}{1 -  y_{w}^{(i)}/n^{(i)}}) = log(\frac{y_{w}^{(i)}}{n^{(i)} - y_{w}^{(i)}})
+\end{equation*}
+
+And when comparing two groups, say in our dataset democrats ($D$) and republicans ($R$), the log odds ratio becomes:
+\begin{equation*}
+    L_{w}^{(D-R)} = log(\frac{y_{w}^{(D)}}{n^{(D)} - y_{w}^{(D)}}) - log(\frac{y_{w}^{(R)}}{n^{(R)} - y_{w}^{(R)}})
+\end{equation*}
+\\
+
+\part{12}
+(10 Points) \textbf{Complete the log-odds ratio with prior code}.
+While the \textit{log-odds ratio} is a helpful metric, it often is dominated by low frequency words.
+Addressing this issue, we can first model the usage of words for the full collection of documents, \textit{prior}, and use that as a starting-point for the group-specific analysis.
+We will implement a prior in our log-odds ratio as following:
+\begin{equation*}
+    \Omega_{w}^{(i)} = \frac{y_{w}^{(i)} + \alpha_{w}}{n^{(i)} + \alpha_0 - y_{w}^{(i)} - \alpha_{w}},
+\end{equation*}
+\begin{equation*}
+    \delta_{w}^{(i-j)} = log(\frac{\Omega_{w}^{(i)}}{\Omega_{w}^{(j)}}),
+\end{equation*}
+where $\alpha_0 =  \sum_{w=1}^{W} \alpha_w$.
+For our assignment, the prior $\alpha$ will be the complete dataset (if we compare $D$ and $R$, then $\alpha_w = y_w^{(D)} + y_w^{(R)}$), however, we could alternatively impose a more informative prior by using a much bigger background corpus that is independent of our dataset to estimate the complete distribution of word usage.
+Finally, we use an approximation of the variance:
+\begin{equation*}
+\sigma^2(\delta_{w}^{(i-j)}) \approx \frac{1}{(y_{w}^{(i)} + \alpha_{w})} + \frac{1}{(y_{w}^{(j)} + \alpha_{w})}
+\end{equation*}
+, since infrequently spoken words have higher frequency variance in our groups, to obtain a final statistic:
+\begin{equation*}
+    \zeta_w^{(i - j)} = \frac{\delta_{w}^{(i - j)}}{\sqrt{\sigma^2(\delta_{w}^{(i - j)})}}
+\end{equation*}
+\\
+
+\part{}
+(10 Points) \textbf{Complete the issue evolution code.}
+One of the applications of obtaining word statistics is to investigate the dynamics of word usage across time.
+In  a naive implementation, we would separate the data in discrete time periods and calculate the word statistic as before for each group of documents across time.
+However, this would result in noisy counts, especially if our time intervals are small.
+Instead, we apply a smoother to the data: we calculate a $b$-window moving count, $m$, of word use, and apply an exponential smoother, with a smoothing factor $A$,
+\begin{multline*}
+    \cr m_{wt}^{(i)} = \sum_{\tau = t - b}^t y_{w\tau}^{(i)},\\
+    \cr s_{w(b)}^{(i)} = m_{w(b)}^{(i)},\\
+    \cr s_{wt}^{(i)} = Am_{wt}^{(i)}  + (1-A)s_{w(t-1)}^{(i)} \\
+\end{multline*}
+The second equation denotes that we start at $t=b$. We can then calculate $\zeta_{wt}^{(i)}$, using $s_{wt}^{(i)}$ instead of $y_{wt}^{(i)}$. [Note: exponential smoothing is more commonly applied to moving average computation, but in this case we are smoothing count variables for a fixed window size, so there is no need to normalize by window size]
+\\
+
+\part{}
+Now that we have our analysis tools, answer the following questions by using the code from \textbf{Part B} \& \textbf{C}:
+\begin{enumerate}
+    \item (5 Points)  What are the top words used by women Democrats compared to men Republicans?
+    \item (5 Points) \citet{rodriguez2022word} curated a list of 10 political words to explore the analysis of models according to human raters. \texttt{[`freedom', `justice', `equality', `democracy', `abortion', `immigration', `welfare', `taxes', `democrat', `republican']}. What are top 2 words that had the changed the most in usage between Democrats and Republicans across congressional sessions?
+\end{enumerate}
+% \end{parts}
+
+\end{homeworkProblem}
+
+
+\begin{homeworkProblem}[Topic Models]
+In class you learned about topic models, in this section we will not ask you to implement Latent Dirichlet Allocation (LDA) (lucky you), rather we will use the \texttt{gensim} implementation to use an already trained topic model (which was trained with subset of the data) on our congressional speech datasets.
+For this problem, you will be editing the \texttt{topic$\_$models.py}
+
+ In the previous section, we investigated how the keywords usage changes between political parties across time. This direct metric has some drawbacks as it may not be desirable to compare word usage in varied contexts. Instead, we will now narrow the context of the analysis by measuring the change across time within a specific topic. This is the preferred method in practice \citep{monroe2008fightin}:
+
+\begin{equation*}
+    \delta_{kw}^{(i)} = log(\frac{y_{kw}^{(i)} + \alpha_{kw}}{n_k^{(i)} + \alpha_{k0} - y_{kw}^{(i)} - \alpha_{kw}}),
+\end{equation*}
+
+Where we take topic-specific counts for words and prior, e.g. $y_{kw}^{(i)}$ is the word-count of word $w$ in documents of topic $k$ within the group $(i)$.
+Thankfully, the only thing we need to update from the previous section is how we calculate the counts.
+\\
+ 
+
+ \part{}
+
+\begin{enumerate}
+    \item (10 Points) Complete the code to assign documents to topics.
+Use the \texttt{LdaMulticore.get\_document\_topics()} function to obtain the topic distribution for each document in our dataset, and assign the topic with the highest score to each document.
+Answer the following:
+    \item (5 Points) Create a table that lists the change in the following word usage over the congressional sessions: \texttt{['abortion', 'justice', 'freedom']} within documents related to \textbf{healthcare} (topic $5$).  How did the political party assigned to each word change?  Compare your findings to the output of \texttt{part 1D} which calculated the change in words across all documents.  How does using a more specific context (congressional speeches related to healthcare) change the results?
+\end{enumerate}
+
+
+\end{homeworkProblem}
+
+\begin{homeworkProblem}[Word Embeddings]
+In this section, we will use the \texttt{word2vec} gensim implementations to learn vector representations of words and use them to analyze language variation and change. You will be editing the \texttt{word$\_$embeddings.py} file.
+\\
+
+\part{}
+
+
+ 
+\begin{enumerate}
+    \item (10 Points) \textbf{Train \texttt{word2vec} models.}
+Train models to learn word embedding matrices for speeches of each party using the gensim library.
+    \item (5 Points) Using the code and the models you trained, we can attempt to answer the question: How does the usage of the word ``\texttt{taxes}" change between democrats and republicans? \textbf{Hint}: examine the top 10 nearest neighbors of \texttt{taxes} in the democrat and republican models.
+\end{enumerate}
+
+\part{}
+
+(10 Points) \textbf{Complete the code for word embedding space alignment.}
+The comparison we made in the previous section was good enough to suggest similarities and differences but not enough to conduct a comparative analysis.
+For this it would be ideal to compare vectors across models, however this results in nonsensical conclusions as each embedding space was created independently and the vector spaces are not directly comparable. To compare them, we first have to align the embeddings.
+\\
+
+One way to align these embedding matrices is called Procrustes alignment, which uses singular value decomposition.
+Defining $\textbf{W}^{(g)} \in R^{|V| \times d}$ as the embedding matrix for group $g$, we align across groups $g_i, g_j$ while preserving cosine similarities by optimizing:
+
+\begin{equation*}
+    \arg \min_{Q^TQ=I} ||W^{g_i}Q - W^{g_j}||_F
+\end{equation*}
+The expression is minimized for $Q=UV^T$ where SVD$( (W^{g_i})^T W^{g_j}) = U\Sigma V^T$.
+\\
+
+
+\part{}
+
+Answer the following questions:
+\begin{enumerate}
+    \item (5 points) Using the models you trained in part A, rank by similarity the political keywords from \citep{rodriguez2022word} as used by Republicans and Democrats.
+    \item (10 points) Train Republican and Democrat \texttt{word2vec} models across each congressional session and calculate the average cosine distance over the 10 keywords we have been using during the homework to answer this question.  Have congressional speeches around specific issues become increasingly polarized over the years? 
+    \item (5 points) We will use the cosine distance metric from the previous answer as a proxy for polarization: distance between Republican and Democrat embeddings for each words means they have been used in distant contexts.  What are some possible limitations of this approach?
+\end{enumerate}
+
+
+\end{homeworkProblem}
+
+\bibliography{citations}
+\bibliographystyle{acl_natbib}
+
+\end{document}
