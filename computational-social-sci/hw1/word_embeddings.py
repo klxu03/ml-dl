@@ -110,8 +110,9 @@ def align_matrices (mat1, mat2, idx1, idx2):
   
   ####### PART B #######
   # use procrustes function here
-  rotated_mat2 = None
-  raise NotImplementedError()
+  Q = procrustes(remapped_mat1, remapped_mat2)
+
+  rotated_mat2 = remapped_mat2.dot(Q)
 
   return remapped_mat1, rotated_mat2, (common_idx, common_iidx)
 
@@ -132,7 +133,9 @@ if __name__ == "__main__":
     seed=42
     workers=16
     
-    r_model = None
+    # r_model = None
+    r_model = Word2Vec(r_df['text'].apply(str.split), window=window, min_count=min_count, seed=seed, workers=workers)
+
     r_embs, (r_idx, r_iidx) = w2v_to_numpy(r_model)
     print("PART A: #1")
     print("Republican near neighbors")
@@ -140,7 +143,9 @@ if __name__ == "__main__":
         print (nbor, sim)
     print()
 
-    d_model = None
+    # d_model = None
+    d_model = Word2Vec(d_df['text'].apply(str.split), window=window, min_count=min_count, seed=seed, workers=workers)
+
     d_embs, (d_idx, d_iidx) = w2v_to_numpy(d_model)
     print("Democrat near neighbors")
     for nbor, sim in near_neighbors(d_embs, query, d_idx, d_iidx, k=10):

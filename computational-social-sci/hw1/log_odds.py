@@ -2,6 +2,7 @@ import pandas
 from collections import Counter, defaultdict
 import math
 from tabulate import tabulate
+import copy
 
 from helper import read_data, politics_words
 
@@ -69,13 +70,12 @@ def compute_odds_with_prior(counts1, counts2, prior):
     total_counts1 = sum(counts1.values())
     total_counts2 = sum(counts2.values())
 
-    combined_prior = counts1 + counts2  # This ensures that alpha_w = y_w1 + y_w2 for each word
-    alpha_0 = sum(combined_prior.values())  # This is the sum of all alpha_w values
+    alpha_0 = sum(prior.values())
 
     for word in set(counts1).intersection(counts2):
         y_w1 = counts1.get(word, 0) 
         y_w2 = counts2.get(word, 0) 
-        alpha_w = y_w1 + y_w2 
+        alpha_w = prior.get(word, 0)
         
         omega_w1 = (y_w1 + alpha_w) / (total_counts1 + alpha_0 - y_w1 - alpha_w)
         omega_w2 = (y_w2 + alpha_w) / (total_counts2 + alpha_0 - y_w2 - alpha_w)
@@ -144,11 +144,20 @@ if __name__ == "__main__":
     r_df = data_df[data_df.party == "R"]
     d_df = data_df[data_df.party == "D"]
 
+    r_m_df = data_df[(data_df.party == "R") & (data_df.gender == "M")]
+    d_f_df = data_df[(data_df.party == "D") & (data_df.gender == "F")]
+
     r_counter = Counter()
     r_df.text.apply(lambda t: r_counter.update(t.split()))
 
+    r_m_counter = Counter()
+    r_m_df.text.apply(lambda t: r_m_counter.update(t.split()))
+
     d_counter = Counter()
     d_df.text.apply(lambda t: d_counter.update(t.split()))
+
+    d_f_counter = Counter()
+    d_f_df.text.apply(lambda t: d_f_counter.update(t.split()))
     
     # Part A. Compute Log-Odds Ratio
     w_to_ratio = compute_log_odds_ratios(d_counter, r_counter)
@@ -166,24 +175,24 @@ if __name__ == "__main__":
     print(tabulate(table, headers=["Word", "Odds", "R count", "D count"]))
     
     # Part B. Compute Log-Odds Ratio with Prior
-    prior = d_counter
+    prior = copy.deepcopy(d_counter)
     prior.update(r_counter)
 
-    w_to_ratio = compute_odds_with_prior(d_counter, r_counter, prior)
+    w_to_ratio = compute_odds_with_prior(d_f_counter, r_m_counter, prior)
     print()
     print("More Republican")
     table = []
     for w, odds in sorted(w_to_ratio.items(), key=lambda item: item[1])[:10]:
-        table.append([w, odds, r_counter[w], d_counter[w]])
-    print(tabulate(table, headers=["Word", "Odds", "R count", "D count"]))
+        table.append([w, odds, r_m_counter[w], d_f_counter[w]])
+    print(tabulate(table, headers=["Word", "Odds", "R_M count", "D_F count"]))
 
 
     print()
     print("More Democrat")
     table = []
     for w, odds in sorted(w_to_ratio.items(), key=lambda item: item[1], reverse=True)[:10]:
-       table.append([w, odds, r_counter[w], d_counter[w]])
-    print(tabulate(table, headers=["Word", "Odds", "R count", "D count"]))
+       table.append([w, odds, r_m_counter[w], d_f_counter[w]])
+    print(tabulate(table, headers=["Word", "Odds", "R_M count", "D_F count"]))
 
         
     # Part C. Compute word evolutions
