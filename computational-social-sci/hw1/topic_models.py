@@ -37,6 +37,19 @@ def assign_topics(model, dictionary, data):
     scores = []
     
     ####### PART A #######
+    for text in data['text']:
+        # Convert the document to bag-of-words format using the dictionary
+        bow = dictionary.doc2bow(text.split())
+
+        # Get the list of topic probabilities for the document
+        topic_probs = model.get_document_topics(bow)
+
+        # Get the highest scoring topic and its score
+        highest_topic, highest_score = max(topic_probs, key=lambda x: x[1])
+        
+        # Append the topic and score to the lists
+        topics.append(highest_topic)
+        scores.append(highest_score)
     
     return topics, scores
     
@@ -93,10 +106,3 @@ if __name__ == "__main__":
     for w, odds_list in political_keywords.items():
         table.append([w] + odds_list)
     print(tabulate(table, headers=["Word", "112", "113", "114"]))
-    
-    
-    
-   
-    
-    
-    

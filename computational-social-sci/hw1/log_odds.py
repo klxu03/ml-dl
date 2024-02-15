@@ -105,15 +105,23 @@ def smoother(A, window, count_list):
     new_counts = []
     
     ####### PART C #######
+
+    # Initialize the moving count with the first `window` elements
+    moving_count = Counter()
+    for i in range(window):
+        moving_count.update(count_list[i])
+
     # Start applying exponential smoothing after the first `window` elements
     for t in range(window, len(count_list)):
         current_counter = count_list[t]
         previous_smoothed_counter = new_counts[-1] if len(new_counts) > 0 else Counter()
 
-        # Calculate the moving count for the current window
-        moving_count = Counter()
-        for i in range(max(0, t-window+1), t+1):
-            moving_count.update(count_list[i])
+        # Update the moving count
+        # Subtract counts going out of the window
+        if t > window:
+            moving_count.subtract(count_list[t-window])
+        # Add counts coming into the window
+        moving_count.update(count_list[t])
 
         # Calculate the smoothed value for the current time point
         smoothed_counter = Counter()
