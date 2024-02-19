@@ -80,7 +80,27 @@ def explore_mlp_activations(dev_d: Dict[str, List[Union[str, int]]],
     activation_names = activations  # for visualization
 
     # iterate over activations to define train config, run the training and generate the plots
-    raise NotImplementedError
+    for act, actn, in zip(activations, activation_names):
+        train_config = EasyDict({
+            'batch_size': batch_size,  # we use batching for training
+            'lr': lr,
+            'num_epochs': num_epochs,  # the total number of times all the training data is iterated over
+            'hidden_dims': hidden_dims,  # the number of neurons in each hidden layer
+            'save_path': f'model_activations_{actn}.pth',  # path where to save the model
+            'embeddings': embedding_type,
+            'num_classes': num_classes,
+            'activation': act,  # non-linear activation function
+        })
+
+        epoch_train_losses, _, epoch_dev_loss, epoch_dev_accs, _, _ = run_mlp(train_config, embeddings, dev_dataset,
+                                                                              train_dataset,
+                                                                              test_dataset)
+        all_emb_epoch_dev_accs.append(epoch_dev_accs)
+        all_emb_epoch_dev_losses.append(epoch_dev_loss)
+        visualize_epochs(epoch_train_losses, epoch_dev_loss, f"activation_structure_{actn}_loss.png")
+
+    visualize_configs(all_emb_epoch_dev_accs, activation_names, "Accuracy", "./all_activation_structures_acc.png")
+    visualize_configs(all_emb_epoch_dev_losses, activation_names, "Loss", "./all_activation_structures_loss.png")
     # your code ends here
 
 
@@ -109,11 +129,31 @@ def explore_mlp_learning_rates(dev_d: Dict[str, List[Union[str, int]]],
 
     # learning rates to explore:
     # we provide the base learning rate as a start, explore more learning rate values!
-    lrs = [0.02]
+    lrs = [0.2, 0.02, 0.015, 0.01, 0.001]  
     lrs_names = [str(lr) for lr in lrs] # for visualization
 
     # iterate over learning rates to define train config, run the training and generate the plots
-    raise NotImplementedError
+    for lr, lr_n, in zip(lrs, lrs_names):
+        train_config = EasyDict({
+            'batch_size': batch_size,  # we use batching for training
+            'lr': lr,
+            'num_epochs': num_epochs,  # the total number of times all the training data is iterated over
+            'hidden_dims': hidden_dims,  # the number of neurons in each hidden layer
+            'save_path': f'learning_rate_{lr_n}.pth',  # path where to save the model
+            'embeddings': embedding_type,
+            'num_classes': num_classes,
+            'activation': activation,  # non-linear activation function
+        })
+
+        epoch_train_losses, _, epoch_dev_loss, epoch_dev_accs, _, _ = run_mlp(train_config, embeddings, dev_dataset,
+                                                                              train_dataset,
+                                                                              test_dataset)
+        all_emb_epoch_dev_accs.append(epoch_dev_accs)
+        all_emb_epoch_dev_losses.append(epoch_dev_loss)
+        # visualize_epochs(epoch_train_losses, epoch_dev_loss, f"activation_structure_{actn}_loss.png")
+
+    visualize_configs(all_emb_epoch_dev_accs, lrs_names, "Accuracy", "./all_lr_structures_acc.png")
+    visualize_configs(all_emb_epoch_dev_losses, lrs_names, "Loss", "./all_lr_structures_loss.png")
     # your code ends here
 
 
@@ -129,7 +169,7 @@ if __name__ == '__main__':
 
     # Explore different hidden dimensions
     # uncomment the following line to run
-    explore_mlp_structures(dev_data, train_data, test_data, pretrained_embeddings)
+    # explore_mlp_structures(dev_data, train_data, test_data, pretrained_embeddings)
 
     # Explore different activations
     # uncomment the following line to run
@@ -137,4 +177,4 @@ if __name__ == '__main__':
 
     # Explore different learning rates
     # uncomment the following line to run
-    # explore_mlp_learning_rates(dev_data, train_data, test_data, pretrained_embeddings)
+    explore_mlp_learning_rates(dev_data, train_data, test_data, pretrained_embeddings)
