@@ -17,6 +17,8 @@ sentence-splitter = "^1.4"
 torch = "^2.2.0"
 tqdm = "^4.66.2"
 transformers = "^4.37.2"
+ipywidgets = "^8.1.2"
+ipykernel = "^6.29.2"
 
 
 [build-system]
