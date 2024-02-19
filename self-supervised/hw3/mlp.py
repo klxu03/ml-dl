@@ -53,12 +53,19 @@ def featurize(sentence: str, embeddings: gensim.models.keyedvectors.KeyedVectors
         except KeyError:
             pass
 
-    # TODO (Copy from your HW1): complete the function to compute the average embedding of the sentence
+    # TOD (Copy from your HW1): complete the function to compute the average embedding of the sentence
     # your return should be
     # None - if the vector sequence is empty, i.e. the sentence is empty or None of the words in the sentence is in the embedding vocabulary
     # A torch tensor of shape (embed_dim,) - the average word embedding of the sentence
     # Hint: follow the hints in the pdf description
-    raise NotImplementedError
+    if len(vectors) == 0 or sentence is None or len(sentence) == 0:
+        return None
+    
+    # A torch tensor of shape (embed_dim,) - the average word embedding of the sentence
+    np_vectors = np.array(vectors)
+    column_means = np_vectors.mean(axis=0)
+
+    return torch.tensor(column_means, dtype=torch.float32)
 
 
 def create_tensor_dataset(raw_data: Dict[str, List[Union[int, str]]],
@@ -66,9 +73,12 @@ def create_tensor_dataset(raw_data: Dict[str, List[Union[int, str]]],
     all_features, all_labels = [], []
     for text, label in tqdm(zip(raw_data['text'], raw_data['label'])):
 
-        # TODO (Copy from your HW1): complete the for loop to featurize each sentence
+        # TOD (Copy from your HW1): complete the for loop to featurize each sentence
         # only add the feature and label to the list if the feature is not None
-        raise NotImplementedError
+        feature = featurize(text, embeddings)
+        if feature is not None:
+            all_features.append(feature)
+            all_labels.append(label)
         # your code ends here
 
     # stack all features and labels into two single tensors and create a TensorDataset
@@ -87,16 +97,23 @@ class SentimentClassifier(nn.Module):
         self.embed_dim = embed_dim
         self.num_classes = num_classes
 
-        # TODO: define the activation functions
+        # TOD: define the activation functions
         # activation function
         if activation == 'Sigmoid':
             self.activation = nn.Sigmoid()
+        elif activation == 'Tanh':
+            self.activation = nn.Tanh()
+        elif activation == 'ReLU':
+            self.activation = nn.ReLU()
+        elif activation == 'GeLU':
+            self.activation = nn.GELU()
         else:
+            print(f"Activation function {activation} is not supported")
             raise NotImplementedError
 
         # linear layers for the MLP
         self.linears = nn.ModuleList()
-        # TODO: define the MLP given the hidden dimensions
+        # TOD: define the MLP given the hidden dimensions
         # - embed_dim is the dimension of the word embeddings (input to the MLP)
         # - num_classes is the number of classes (output of the MLP)
         # - hidden_dims is a list of integers, where each integer is the dimension of a hidden layer in the MLP
@@ -105,16 +122,24 @@ class SentimentClassifier(nn.Module):
         # Hint:
         # - Remember to consider the case when there are no hidden layers (i.e. hidden_dims is an empty list)
         #       in this case, it essentially degrades to the architecture we used in hw 1
-        raise NotImplementedError
+        if len(hidden_dims) == 0:
+            self.linears.append(nn.Linear(embed_dim, num_classes))
+        else:
+            self.linears.append(nn.Linear(embed_dim, hidden_dims[0]))
+            for i in range(len(hidden_dims) - 1):
+                self.linears.append(nn.Linear(hidden_dims[i], hidden_dims[i + 1]))
+            self.linears.append(nn.Linear(hidden_dims[-1], num_classes))
         # your code ends here
 
         self.loss = nn.CrossEntropyLoss(reduction='mean')
 
     def forward(self, inp):
 
-        # TODO: complete the forward function
+        # TOD: complete the forward function
         # Hint remember to apply the activation function to all hidden layers except the last one
-        raise NotImplementedError
+        for layer in self.linears[:-1]:
+            inp = self.activation(layer(inp))
+        logits = self.linears[-1](inp)
         # your code ends here
 
         return logits
@@ -122,11 +147,15 @@ class SentimentClassifier(nn.Module):
 
 def accuracy(logits: torch.FloatTensor, labels: torch.LongTensor) -> torch.FloatTensor:
     assert logits.shape[0] == labels.shape[0]
-    # TODO (Copy from your HW1): complete the function to compute the accuracy
+    # TOD (Copy from your HW1): complete the function to compute the accuracy
     # Hint: follow the hints in the pdf description, the return should be a tensor of 0s and 1s with the same shape as labels
     # labels is a tensor of shape (batch_size,)
     # logits is a tensor of shape (batch_size, num_classes)
-    raise NotImplementedError
+    preds = torch.argmax(logits, dim=1)
+    correct = preds == labels
+
+    accuracy = correct.float()
+    return accuracy
 
 
 def evaluate(model: SentimentClassifier, eval_dataloader: DataLoader) -> Tuple[float, float]:
