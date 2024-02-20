@@ -41,15 +41,15 @@ def sample_from_trained_mlp_lm(dev_d):
 if __name__ == '__main__':
     # Test the one-step BPE algorithm
     # uncomment the following line to run
-    # test_one_step_bpe()
+    test_one_step_bpe()
 
     # Test the BPE algorithm
     # uncomment the following line to run
-    # test_bpe()
+    test_bpe()
 
     # Run BPE on the wikitext dataset
     # uncomment the following line to run
-    # bpe_on_wikitext()
+    bpe_on_wikitext()
 
     # load raw data for lm
     # uncomment the following line to run
