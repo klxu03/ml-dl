@@ -11,6 +11,7 @@ from sentence_splitter import SentenceSplitter
 from transformers import AutoTokenizer, TopPLogitsWarper
 from collections import Counter, defaultdict  # we will using "Counter" data structure for counting word co-occurences
 from typing import List
+import math
 
 torch.manual_seed(42)
 random.seed(42)
@@ -53,10 +54,12 @@ def preprocess_data(data, local_window_size, splitter, tokenizer):
                     # have already traversed all of the sentence
                     break
 
-                # TODO: Select a subset of token_ids from idx -> idx + local_window_size as input and put it to x
+                # TOD: Select a subset of token_ids from idx -> idx + local_window_size as input and put it to x
                 # Select a subset of token_ids from idx -> idx + local_window_size as input and put it to x: list of context token_ids
                 # Then select the word immediately after this window as output and put it to y: the target next token_id
-                raise NotImplementedError
+                for i in range(local_window_size):
+                    x = token_ids[idx:idx + local_window_size]
+                    y = token_ids[idx + local_window_size]
                 # your code ends here
 
                 x_data.append(x)
@@ -82,20 +85,27 @@ class NPLMFirstBlock(nn.Module):
         self.dropout = nn.Dropout(dropout_p)
 
     def forward(self, inputs):
-        # TODO: implement the forward pass
-        raise NotImplementedError
+        # TOD: implement the forward pass
         # looking up the word embeddings from self.embeddings()
+        embeds = self.embeddings(inputs)
+
         # And concatenating them
+        # embeds = embeds.view(-1, self.local_window_size * self.embed_dim)
+        embeds = embeds.view(embeds.size(0), -1)  # [batch_size, local_window_size * embed_dim]
         # Note this is done for a batch of instances.
 
 
         # Transform embeddings with a linear layer and tanh activation
+        hidden = self.linear(embeds)
+        hidden = torch.tanh(hidden)
 
 
         # apply layer normalization
+        hidden = self.layer_norm(hidden)
 
 
         # apply dropout
+        final_embeds = self.dropout(hidden)
 
         # your code ends here
 
@@ -112,19 +122,22 @@ class NPLMBlock(nn.Module):
         self.dropout = nn.Dropout(dropout_p)
 
     def forward(self, inputs):
-        # TODO: implement the forward pass
-        raise NotImplementedError
+        # TOD: implement the forward pass
         # apply linear transformation and tanh activation
+        hidden = self.linear(inputs)
+        hidden = torch.tanh(hidden)
 
 
         # add residual connection
+        hidden = hidden + inputs
 
 
         # apply layer normalization
+        hidden = self.layer_norm(hidden)
 
 
         # apply dropout
-
+        final_inputs = self.dropout(hidden)
         # your code ends here
 
         return final_inputs
@@ -137,12 +150,12 @@ class NPLMFinalBlock(nn.Module):
         self.linear = nn.Linear(hidden_dim, vocab_size, bias=False)
 
     def forward(self, inputs):
-        # TODO: implement the forward pass
-        raise NotImplementedError
+        # TOD: implement the forward pass
         # apply linear transformation
+        logits = self.linear(inputs)
 
         # apply log_softmax to get log-probabilities (logits)
-
+        log_probs = F.log_softmax(logits, dim=-1)
         # your code ends here
 
         return log_probs
@@ -156,23 +169,26 @@ class NPLM(nn.Module):
 
         self.intermediate_layers = nn.ModuleList()
 
-        # TODO: create num_blocks of NPLMBlock as intermediate layers
+        # TOD: create num_blocks of NPLMBlock as intermediate layers
         # append them to self.intermediate_layers
-        raise NotImplementedError
-
+        for _ in range(num_blocks):
+            self.intermediate_layers.append(NPLMBlock(hidden_dim, dropout_p))
         # your code ends here
 
         self.final_layer = NPLMFinalBlock(vocab_size, hidden_dim)
 
     def forward(self, inputs):
-        # TODO: implement the forward pass
-        raise NotImplementedError
+        # TOD: implement the forward pass
         # input layer
+        hidden = self.first_layer(inputs)
 
         # multiple middle layers
         # remember to apply the ReLU activation function after each layer
+        for layer in self.intermediate_layers:
+            hidden = F.relu(layer(hidden))
 
         # output layer
+        log_probs = self.final_layer(hidden)
 
         # your code ends here
 
@@ -216,10 +232,10 @@ def train(model, train_dataloader, dev_dataloader, criterion, optimizer, schedul
             # compute loss function
             loss = criterion(log_probs, target)
 
-            # TODO extract perplexity
+            # TOD extract perplexity
             # remember the connection between perplexity and cross-entropy loss
             # name the perplexity result as 'ppl'
-            raise NotImplementedError
+            ppl = torch.exp(loss)
             # your code ends here
 
             # backward pass and update gradient
@@ -266,9 +282,9 @@ def evaluate(model, eval_dataloader, criterion):
             loss += criterion(log_probs, target).item()
             count += 1
     avg_loss = loss / count
-    # TODO: compute perplexity
+    # TOD: compute perplexity
     # name the perplexity result as 'avg_ppl'
-    raise NotImplementedError
+    avg_ppl = math.exp(avg_loss)
     # your code ends here
     return avg_loss, avg_ppl
 
