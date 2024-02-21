@@ -297,7 +297,7 @@ def generate_text(prompt, model, tokenizer, local_window_size, top_p, max_len=30
     count = 0
     while count < max_len:
         # select the tokens in the window
-        new_input = torch.tensor(tokenized_prompt_ids[-local_window_size:])
+        new_input = torch.tensor(tokenized_prompt_ids[-local_window_size:]).unsqueeze(0)
 
         # compute model output
         output = model(new_input)
