@@ -262,8 +262,10 @@ def annotate_two(examples,
         
         comment = examples[index]["comment"]
         parsed = comment.replace("\n", "<br>")
-        text = '<h4 class="text-center"><u>Consider the following internet video, and its corresponding response:</u></h4>'
-        text += f'<div class="row"><p class="text-center" style="padding-left:10%;padding-right:10%;font-size:120%"><br>{parsed}<br></p>  </div>'
+        desc = examples[index]["description"]
+        parsed_desc = desc.replace("\n", "<br>")
+        text = '<h4 class="text-center"><u>Consider the following internet video, and its corresponding response, as well as some relevant context of the description of the video the person commented on BELOW the actual comment:</u></h4>'
+        text += f'<div class="row"><p class="text-center" style="padding-left:10%;padding-right:10%;font-size:120%"><br>Comment: {parsed}<br><br>Video Description: {parsed_desc}<br></p>  </div>'
         sentence_html.value = text
         for set, buttons in responses.items():
             buttons.value = None
