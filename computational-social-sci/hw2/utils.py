@@ -7,7 +7,7 @@ from ipywidgets import (
 )
 import os
 from ipywidgets import Button, HTML, HBox
-from IPython.display import display
+from IPython.display import display, clear_output
 import random
 import pickle
 import time
@@ -286,47 +286,6 @@ def annotate_two(examples,
     #### SHOWING MAIN PART
     sentence_html=HTML()
     display(sentence_html)
-    """
-    responses = {
-        el['name']: ToggleButtons(
-            options=el['options'], 
-            description=el['question'], 
-            disabled=False, value=None, button_style='') for el in questions
-    }        
-
-    
-    for set, buttons in responses.items():
-        display(buttons)
-    """
-
-    """
-    # Assuming 'questions' is a list of dictionaries with 'name', 'options', and 'question' keys
-    widgets_list = []
-    responses = {}
-    for el in questions:
-        # Create an HTML widget for the question text
-        question_text = el['question'].replace("\n", "<br>")
-        question_widget = HTML(value=f"<b>{question_text}</b>")
-        
-        # Create the ToggleButtons for the options
-        toggle_buttons = ToggleButtons(
-            options=el['options'],
-            disabled=False,
-            value=None,
-            button_style=''
-        )
-        
-        # Combine the question and the buttons into a single VBox
-        combined_widget = VBox([question_widget, toggle_buttons])
-        
-        # Add the combined widget to the list
-        widgets_list.append(deepcopy(combined_widget))
-
-        responses[el['name']] = deepcopy(combined_widget)
-
-    # Display all the widgets
-    display(VBox(widgets_list))
-    """
 
     new_line = "\n"
     responses = {
@@ -347,9 +306,11 @@ def annotate_two(examples,
     def on_click(btn):
         nonlocal current_index
         labels_on = {}
-        for cat, buttons in responses.items():
-            labels_on[cat] = buttons.value
-            buttons.value = None
+        for cat, vbox in responses.items():
+            toggle_buttons = vbox.children[1]
+            labels_on[cat] = toggle_buttons.value
+            toggle_buttons.value = None
+
         add_annotation(labels_on)
         render(current_index)
         
