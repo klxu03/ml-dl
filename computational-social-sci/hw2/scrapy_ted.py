@@ -10,7 +10,7 @@ class TEDSpider(scrapy.Spider):
         self.talk_descriptions = {"talkid": [], "description": []}
 
     def start_requests(self):
-        df = pd.read_csv('data/common1.csv')
+        df = pd.read_csv('data/common2.csv')
 
         for talk_id in df['talkid']:
             url = f'https://www.ted.com/talks/{talk_id}'
@@ -26,12 +26,12 @@ class TEDSpider(scrapy.Spider):
 
     def closed(self, reason):
         print(f"Talk descriptions: {self.talk_descriptions}")
-        original_df = pd.read_csv('data/common1.csv')
+        original_df = pd.read_csv('data/common2.csv')
         descriptions_df = pd.DataFrame.from_dict(self.talk_descriptions)
 
         merged_df = original_df.merge(descriptions_df, on='talkid', how='left')
         print(f"Done scraping merged_df {merged_df}")
-        merged_df.to_csv('data/common1_with_descriptions.csv', index=False)
+        merged_df.to_csv('data/common2_with_descriptions.csv', index=False)
 
 if __name__ == '__main__':
     process = CrawlerProcess()
