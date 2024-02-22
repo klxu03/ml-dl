@@ -12,6 +12,7 @@ import random
 import pickle
 import time
 import pandas as pd
+from copy import deepcopy
 
 
 def load_samples(data_path):
@@ -298,8 +299,10 @@ def annotate_two(examples,
         display(buttons)
     """
 
+    """
     # Assuming 'questions' is a list of dictionaries with 'name', 'options', and 'question' keys
     widgets_list = []
+    responses = {}
     for el in questions:
         # Create an HTML widget for the question text
         question_text = el['question'].replace("\n", "<br>")
@@ -317,10 +320,28 @@ def annotate_two(examples,
         combined_widget = VBox([question_widget, toggle_buttons])
         
         # Add the combined widget to the list
-        widgets_list.append(combined_widget)
+        widgets_list.append(deepcopy(combined_widget))
+
+        responses[el['name']] = deepcopy(combined_widget)
 
     # Display all the widgets
     display(VBox(widgets_list))
+    """
+
+    new_line = "\n"
+    responses = {
+        el['name']: VBox([HTML(value=f"<b>{el['question'].replace(new_line, '<br>')}</b>"), 
+            ToggleButtons(
+                options=el['options'],
+                disabled=False,
+                value=None,
+                button_style=''
+            )]) for el in questions
+    }        
+
+    
+    for set, buttons in responses.items():
+        display(buttons)
     
     btn = Button(description='submit', button_style='info', icon='check')
     def on_click(btn):
