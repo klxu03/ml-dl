@@ -211,18 +211,36 @@ def annotate_two(examples,
              questions=[
                  {"name": 'tone', 
                   "question": """What is the tone of the response with regards to the original poster or speaker?
+                  
                   Here are some examples of what each option might look like:
-                    Strongly Negative: "You are the biggest idiot I have ever. Why would you ever even think and believe these shenanigans, much less present it as a talk to this many people? Don't ever speak on the internet again!"
-                    Negative: "You are wrong. This isn't correct, you should have more thoroughly researched your topic."
+                    Strongly Negative: "You are the biggest idiot I have ever seen. Why would you ever even think and believe these shenanigans, much less present it as a talk to this many people? Don't ever speak on the internet again!"
+                    Negative: "You are wrong. This isn't correct, you should have more thoroughly researched your topic. Please do not speak again on this issue, do something you're familiar with."
                     Neutral: "I disagree with the statement in the video. But there are many valuable points to consider from a different perspective that made me reflect on my beliefs."
-                    Positive: "I think you are right. I have always thought the same way and I am glad to see someone else who thinks the same way! Thank you for giving the talk, it really helped put the words in my mouth that I couldn't say."
+                    Positive: "I think you are right. I have always thought the same way and I am glad to see someone else who thinks the same way! Thank you for giving the talk, it really helped put the words in my mouth that I couldn't say. Thank you so much for this talk!"
                     Strongly Positive: "You are the most intelligent person I have ever heard, know, come across, EVERYTHING. I am so glad that you are speaking to the world, and that I was born with ears so I would be able to listen to the glory of your words and make me see the world in a brand new light. This was the most impactful 10 minutes of my life, truly transformational. What you've accomplished in this talk will be forever remembered by me and all of my future generations! I hope you continue to speak and share your knowledge with the rest of the world, they absolutely need to hear what you preach!"
                   """, 
                   "options": ["Strongly Negative", "Negative", "Neutral", "Positive", "Strongly Positive", "None"]},
-                 {"name": 'expertise', "question": 'Based on the comment, what do you think is the expertise of the speaker?', 
+                 {"name": 'expertise', "question": """Based on the comment, what do you think is the expertise of the speaker?
+                  
+                  Here are some examples of what each option might look like:
+                    No Degree: ""wow ted tok bout space is so funy I wanna be astronot and fly hi. space is so so so big, y rockets no fall? i play space games now, no hw.""
+                    Non-STEM degree: "he is a brilliant talented stand-up comedian but surely not an artist. i enjoyed the first 2 minutes and then i started to feel uneasy and depressed with his views and his impersonating techniques. the real difficulty in art and design is to select one concept not 100."
+                    STEM degree: "Impressive TED Talk, succinctly summarizing the formidable challenges of extraterrestrial navigation and the enigmatic nature of dark matter. The speaker's facility with astrophysical jargon and concepts like cosmic inflation and relativistic propulsion is commendable. A true celebration of scientific inquiry."
+                  """, 
                   "options": ["No Degree", "Non-STEM degree", "STEM degree"]},
-                 {"name": 'encouraging', "question": 'Overall, is this response:', "options": ["Discouraging", "Encouraging"]},
-                 {"name": 'respectful', "question": 'Overall, is this response:', "options": ["Disrespectful", "Neutral", "Respectful"]}
+                 {"name": 'encouraging', "question": """Overall, please rate if this response is Discouraging or Encouraging.
+                  
+                  Here are some examples of what each option might look like:
+                    Discouraging: "You are wrong. This isn't correct, you should have more thoroughly researched your topic. Please do not speak again on this issue, do something you're familiar with."
+                    Encouraging: "I think you are right. I have always thought the same way and I am glad to see someone else who thinks the same way! Thank you for giving the talk, it really helped put the words in my mouth that I couldn't say. Thank you so much for this talk!"
+                  """, "options": ["Discouraging", "Encouraging"]},
+                 {"name": 'respectful', "question": """Overall, is this response Disrespectful, Neutral, or Respectful?
+                  
+                    Here are some examples of what each option might look like:
+                    Disrespectful: "You are the biggest idiot I have ever seen. Why would you ever even think and believe these shenanigans, much less present it as a talk to this many people? Don't ever speak on the internet again!"
+                    Neutral: "I disagree with the statement in the video. But there are many valuable points to consider from a different perspective that made me reflect on my beliefs."
+                    Respectful: "I think you are right. I have always thought the same way and I am glad to see someone else who thinks the same way! Thank you for giving the talk, it really helped put the words in my mouth that I couldn't say. Thank you so much for this talk!"
+                  """, "options": ["Disrespectful", "Neutral", "Respectful"]}
                  ], 
              shuffle=False, 
              final_process_fn=None):
