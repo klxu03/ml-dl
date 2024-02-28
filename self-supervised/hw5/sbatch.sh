@@ -8,7 +8,9 @@
 #SBATCH --time=2:00:0
 #SBATCH --job-name="CS 601.471/671 homework5"
 #SBATCH --output=slurm-%j.out
-#SBATCH --mem=16G
+#SBATCH --mem=32G
+
+module load anaconda
 
 source ~/.bashrc
 conda activate ssm_hw5 # activate the Python environment
