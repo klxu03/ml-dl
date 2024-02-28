@@ -1,6 +1,5 @@
 #!/bin/bash
 
-#SBATCH -A cs601471
 #SBATCH --partition=mig_class
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
@@ -9,6 +8,8 @@
 #SBATCH --job-name="CS 601.471/671 homework5"
 #SBATCH --output=slurm-%j.out
 #SBATCH --mem=32G
+#SBATH --mail-type=FAIL
+#SBATCH --mail-user=kxu39@jhu.edu
 
 module load anaconda
 
