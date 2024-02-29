@@ -40,7 +40,7 @@ class CausalSelfAttention(nn.Module):
         #   The matrix should has 1s in the lower left triangular part (including the diagonal) and 0s in the upper right.
         #   Name the matrix `causal_mask`
         # Hint: you can check torch.tril for creating the matrix with the help of torch.ones.
-        causal_mask = torch.tril(torch.ones(config.block_size, config.block_size))
+        casual_mask = torch.tril(torch.ones(config.block_size, config.block_size))
         # your code ends here
 
         # expand the mask for the batch and head dimensions
