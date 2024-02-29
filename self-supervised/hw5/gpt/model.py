@@ -45,6 +45,7 @@ class CausalSelfAttention(nn.Module):
 
         # expand the mask for the batch and head dimensions
         causal_mask = causal_mask.view(1, 1, config.block_size, config.block_size)
+        self.causal_mask = causal_mask
         # register the mask as a buffer so it's not updated as a model parameter
         # but can still be used in the forward pass & saved to the state_dict
         self.register_buffer("causal_mask", causal_mask)
@@ -90,7 +91,11 @@ class CausalSelfAttention(nn.Module):
         v = v.view(B, T, self.n_head, C // self.n_head).transpose(1, 2) # (B, nh, T, hs)
 
         att = (q @ k.transpose(-2, -1)) * (1.0 / math.sqrt(k.size(-1)))
-        att = att.masked_fill(self.bias[:,:,:T,:T] == 0, float('-inf'))
+
+        # att = att.masked_fill(self.bias[:,:,:T,:T] == 0, float('-inf'))
+        boolean_mask = self.causal_mask[:, :, :T, :T] == 0
+        att = att.masked_fill(boolean_mask, float('-inf'))
+
         att = F.softmax(att, dim=-1)
         att = self.attn_dropout(att)
         y = att @ v 
