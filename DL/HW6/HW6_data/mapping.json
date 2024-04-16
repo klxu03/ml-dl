@@ -1,0 +1,8 @@
+{
+	"Background_Tissue": 0,
+	"Bipolar_Forceps": 32,
+	"Prograsp_Forceps": 64,
+	"Large_Needle_Driver": 96,
+	"Vessel_Sealer": 128,
+	"Other": 224
+}
