@@ -17,3 +17,11 @@ gpt-neo
 gpt-j
 chatgpt
 gpt-4
+AI
+ai
+assistant
+Meta
+GPT-4
+ChatGPT
+Gemini
+gemini
