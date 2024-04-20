@@ -20,8 +20,12 @@ gpt-4
 AI
 ai
 assistant
-Meta
+meta
 GPT-4
 ChatGPT
-Gemini
 gemini
+artificial intelligence
+claude
+Claude
+assistant
+Assistant

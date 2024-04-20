@@ -86,7 +86,6 @@ def get_anthroscore(text, entities, model, tokenizer, device):
     if scores:
         anthroscore = np.mean(scores) # Return the average score
     else:
-        return 0
         return np.nan  # Return NaN if no scores to average
     
     
@@ -118,7 +117,7 @@ def main():
     
     # SAVE THIS IMAGE FOR PART 2
     plt.figure(figsize=(15,8))
-    ax = sns.lineplot(data=dataset[dataset.year > 2007], x="year", y="anthroscore", errorbar=("ci", 95), err_style="band")
+    ax = sns.lineplot(data=dataset[dataset.year > 1989], x="year", y="anthroscore", errorbar=("ci", 95), err_style="band")
     sns.regplot(data=dataset[dataset.year > 2007], x="year", y="anthroscore", scatter=False, ax=ax, ci=False, color="gray", line_kws={"linestyle":"dashed"})
 
     # Save figure
